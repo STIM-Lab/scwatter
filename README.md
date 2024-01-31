@@ -21,31 +21,32 @@ SCWatter aims to simulate the interactions between light and samples. The algori
 	* It should be a .npy file with the dimension of [Z, Y, X].
 	* You can you tileSample.py to generate a 3D sample.
 
-2. Select a proper executable from sCWatter, sCWatterplane, and sCWatterlayer. The calculated field will be saved as .cw file.
+2. Select a proper executable from sCWatter, sCWatterplane, and sCWatterlayer. The calculated field will be saved as .cw file. For example:
 
-For example:
-	
 	```
 	sCWatter --help 			# See parameter choices
-	sCWatter --sample tilesample.npy --lambda 1 --coef 20 20 --size 64 64 20 --external
+	sCWatter --sample tilesample.npy --lambda 1 --coef 20 20 --size 64 64 20 --external --output sample.cw
 	```
 	
-3. Visualize the field using sCWatterview. For example:
+3. Visualize the field using sCWatterview interactively. For example:
 
 	```
 	sCWatterview --help  		# See parameter choices
-	sCWatterview --input c.cw --size 100
+	sCWatterview --input sample.cw --size 100
 	```
-	Or a non-interactive version to save any plane
+	Or a non-interactive way to save any plane as a .npy file.
 	```
-	sCWatterview --input c.cw --size 100 --nogui --axis 2 --slice -10
+	sCWatterview --input sample.cw --size 100 --nogui --axis 2 --slice -10 --output xy.npy
 	```
 
-## Data Types
-double/complex128.
+4. (optional) If you selected the "nogui" way, you can visualize the saved plane in Python. For example:
 
-## Notes
-*The users can set all they need from the command line via the Boost library.*
-
-*"executable - -help" will provide more information about the input, attributes, and output.*
+	```
+	A = np.load("xy.npy")
+	B = np.real(A[:, :, 1])
+	plt.imshow(B, extent=[50, -50, -50, 50])
+	plt.set_cmap("RdYlBu")
+	plt.colorbar()
+	plt.savefig("xy.png")
+	```
 
