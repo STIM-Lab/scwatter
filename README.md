@@ -2,10 +2,10 @@
 
 SCWatter aims to simulate the interactions between light and samples. The algorithm is based on coupled wave theory and wave propagation theory.
 
-* sCWatter solvesthe field for 3D heterogeneous samples
+* sCWatter solves the field for 3D heterogeneous samples
 * sCWatterplane solves the field for two homogeneous sample boundaries.
 * sCWatterlayer solves the field for multiple homogeneous sample boundaries.
-* sCWatterview visualize the simulation result from sCWatter/sCWatterplane/sCWatterlayer.
+* sCWatterview visualizes the simulation result from sCWatter/sCWatterplane/sCWatterlayer.
 
 ## Main Tools
 * CUDA (https://developer.nvidia.com/cuda-toolkit)
@@ -17,8 +17,8 @@ SCWatter aims to simulate the interactions between light and samples. The algori
 
 
 ## Workflow
-1. Generate you sample. 
-	* It should be a .npy file with the dimension of [Z, Y, X].
+1. Generate your sample. 
+	* It should be a .npy file with the dimensions of [Z, Y, X].
 	* You can you tileSample.py to generate a 3D sample.
 
 2. Select a proper executable from sCWatter, sCWatterplane, and sCWatterlayer. The calculated field will be saved as .cw file. For example:
@@ -39,7 +39,7 @@ SCWatter aims to simulate the interactions between light and samples. The algori
 	sCWatterview --input sample.cw --size 100 --nogui --axis 2 --slice -10 --output xy.npy
 	```
 
-4. (optional) If you selected the "nogui" way, you can visualize the saved plane in Python. For example:
+4. (optional) If you select the "nogui" way, you can visualize the saved plane in Python. For example:
 
 	```
 	A = np.load("xy.npy")
