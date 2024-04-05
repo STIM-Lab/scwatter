@@ -51,23 +51,23 @@ include_directories(
 link_directories(${CUDA_BIN_DIRS})
 				
 #create an executable
-add_executable(sCWatterplane
+add_executable(scwatterplane
 					CoupledWaveStructure.h
 					sCWatterPlane.cpp
 					cnpy/cnpy.cpp)
 
-add_executable(sCWatterlayer
+add_executable(scwatterlayer
 					CoupledWaveStructure.h
 					sCWatterLayer.cpp)
 
-add_executable(sCWatter
+add_executable(scwatter
 					CoupledWaveStructure.h
 					FourierWave.h
 					sCWatter.cpp
 					third_Lapack.h
 					cnpy/cnpy.cpp)
 
-add_executable(sCWatterview
+add_executable(scwatterview
 					CoupledWaveStructure.h
 					FourierWave.h
 					third_Lapack.h
@@ -79,14 +79,14 @@ add_executable(sCWatterview
 					ImGuiFileDialog/ImGuiFileDialog.cpp
 					cnpy/cnpy.cpp)
 
-target_link_libraries(sCWatterplane
+target_link_libraries(scwatterplane
 			ZLIB::ZLIB
 			glm::glm
 			Boost::program_options
 )
 
 
-target_link_libraries(sCWatterlayer
+target_link_libraries(scwatterlayer
 			ZLIB::ZLIB
 			glm::glm
 			Boost::program_options
@@ -94,7 +94,7 @@ target_link_libraries(sCWatterlayer
 )
 
 
-target_link_libraries(sCWatter
+target_link_libraries(scwatter
 			ZLIB::ZLIB
 			glm::glm
 			Boost::program_options
@@ -103,7 +103,7 @@ target_link_libraries(sCWatter
 			MKL::MKL
 )
 
-target_link_libraries(sCWatterview
+target_link_libraries(scwatterview
 			ZLIB::ZLIB
 			glfw
 			glm::glm

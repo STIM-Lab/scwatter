@@ -23,6 +23,7 @@ std::vector<double> in_ez;
 double in_z;
 std::vector<double> in_normal;
 std::string in_outfile;
+std::string in_incident;				// numpy file specifying the incident field
 double in_alpha;
 double in_beta;
 std::vector<unsigned int> in_samples;
@@ -96,6 +97,7 @@ int main(int argc, char** argv) {
 		("output,o", boost::program_options::value<std::string>(&in_outfile)->default_value("a.cw"), "output filename for the coupled wave structure")
 		("alpha,a", boost::program_options::value<double>(&in_alpha)->default_value(0.5), "angle used to focus the incident field")
 		("beta,b", boost::program_options::value<double>(&in_beta)->default_value(0.0), "internal obscuration angle (for simulating reflective optics)")
+		("incident", boost::program_options::value<std::string>(&in_incident), "specify the incident field as a NumPy (*.np) file using --alpha to set the range of spatial frequencies")
 		("samples,s", boost::program_options::value<std::vector<unsigned int> >(&in_samples)->multitoken()->default_value(std::vector<unsigned int>{64, 64}, "375"), "number of samples (can be specified in 2 dimensions)")
 		("mode,m", boost::program_options::value<std::string>(&in_mode)->default_value("polar"), "sampling mode (polar, montecarlo)")
 		("wavemask", boost::program_options::value<std::vector<bool> >(&in_wavemask)->multitoken()->default_value(std::vector<bool>{1, 1, 1}, "1 1 1"), "waves simulated (boolean value for incident, reflected, and transmitted)")
@@ -152,6 +154,12 @@ int main(int argc, char** argv) {
 	tira::planewave<double> i = i0.wind(-f[0], -f[1], -f[2]);					// wind the plane wave to the focal point
 	glm::vec<3, std::complex<double> > E0 = i.getE0();
 	unsigned int N[2];										// calculate the number of samples
+
+	// Determine how the incident field is specified:
+	if (vm.count("incident")) {								// if the incident field is specified, 
+		// RUIJIAO: load the incident field here
+		// Specify the size of the incident field in N[0] and N[1]
+	}
 
 	if (in_samples.size() == 1) {
 		if (in_mode == "montecarlo") {

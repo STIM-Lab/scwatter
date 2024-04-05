@@ -398,7 +398,7 @@ int main(int argc, char** argv) {
 
 		Eigen::VectorXcd x = A.colPivHouseholderQr().solve(b);												// solve the linear system
 		std::vector<tira::planewave<double>> P = mat2waves(i, x);									// generate plane waves from the solution vector
-		std::cout << x << std::endl;
+		//std::cout << x << std::endl;
 		cw.Pi.push_back(i);
 
 		for (size_t l = 0; l < L - 1; l++) {														// for each layer
@@ -471,7 +471,7 @@ int main(int argc, char** argv) {
 	}
 	std::cout << std::endl;
 	std::cout << std::setw(namewidth) << std::left << "layers: " << L << std::endl;
-	for (size_t l = 0; l < L; l++) {
+	for (size_t l = 0; l < L; l++) {													// for each layer
 		float z_start, z_end;
 		if (l == 0) z_start = -INFINITY;
 		else z_start = z[l - 1];
