@@ -1,4 +1,4 @@
-#include <stdint.h>
+﻿#include <stdint.h>
 #include <iostream>
 #include <tira/optics/planewave.h>
 #include "CoupledWaveStructure.h"
@@ -31,6 +31,7 @@ double in_alpha;
 double in_beta;
 std::vector<unsigned int> in_samples;
 std::string in_mode;
+std::vector<bool> in_wavemask;
 
 unsigned int L;
 Eigen::MatrixXcd A;
@@ -111,7 +112,7 @@ void InitMatrices() {
 	//A = new std::complex<double>[6 * L * 6 * L];														// allocate space for the matrix
 	A = Eigen::MatrixXcd::Zero(6 * L, 6 * L);
 	//memset(A, 0, 6 * L * 6 * L * sizeof(std::complex<double>));										// zero out the matrix
-	b = Eigen::VectorXcd::Zero(6*L);
+	b = Eigen::VectorXcd::Zero(6 * L);
 	//memset(b, 0, 6 * L * sizeof(std::complex<double>));
 }
 
@@ -133,16 +134,16 @@ void InitSz(tira::planewave<double> p, double incident_refractive_index) {
 	glm::vec<3, double> s = p.getDirection() * incident_refractive_index;
 	sz.resize(L);										// allocate space to store the sz coordinate for each layer
 
-	if(logfile){
-		logfile<<"sx = "<<s[0]<<", sy = "<<s[1]<<std::endl;
-		logfile<<"SZ---------------"<<std::endl;
+	if (logfile) {
+		logfile << "sx = " << s[0] << ", sy = " << s[1] << std::endl;
+		logfile << "SZ---------------" << std::endl;
 	}
- 
-	for (size_t l = 0; l < L; l++){
+
+	for (size_t l = 0; l < L; l++) {
 		sz[l] = std::sqrt(ri[l] * ri[l] - s[0] * s[0] - s[1] * s[1]);
-		if(logfile) logfile<<"sz("<<l<<") = "<<sz[l]<<"   (RI = "<<ri[l]<<")"<<std::endl;
+		if (logfile) logfile << "sz(" << l << ") = " << sz[l] << "   (RI = " << ri[l] << ")" << std::endl;
 	}
-	if(logfile) logfile<<"---------------"<<std::endl<<std::endl;
+	if (logfile) logfile << "---------------" << std::endl << std::endl;
 }
 
 /// <summary>
@@ -180,7 +181,7 @@ void SetGaussianConstraints(tira::planewave<double> p) {
 		Mat(start_row + l, l, Transmitted, X) = s[0];
 		Mat(start_row + l, l, Transmitted, Y) = s[1];
 		Mat(start_row + l, l, Transmitted, Z) = sz[l];
-	}	
+	}
 }
 
 void SetBoundaryConstraints(tira::planewave<double> p) {
@@ -266,10 +267,10 @@ std::vector<tira::planewave<double>> mat2waves(tira::planewave<double> i, Eigen:
 }
 
 /// Removes waves with a k-vector pointed along the negative z axis
-std::vector< tira::planewave<double> > RemoveInvalidWaves(std::vector<tira::planewave<double>> W){
+std::vector< tira::planewave<double> > RemoveInvalidWaves(std::vector<tira::planewave<double>> W) {
 	std::vector<tira::planewave<double>> new_W;
-	for(size_t i = 0; i < W.size(); i++){
-		if(W[i].getKreal()[2] >0)
+	for (size_t i = 0; i < W.size(); i++) {
+		if (W[i].getKreal()[2] > 0)
 			new_W.push_back(W[i]);
 	}
 
@@ -284,9 +285,9 @@ int main(int argc, char** argv) {
 	boost::program_options::options_description desc("Allowed options");
 	desc.add_options()
 		("help", "produce help message")
-		("lambda", boost::program_options::value<double>(&in_lambda)->default_value(1.0), "incident field vacuum wavelength")
-		("direction", boost::program_options::value<std::vector<double> >(&in_dir)->multitoken()->default_value(std::vector<double>{0, 0, 1}, "0, 0, 1"), "incoming field direction")
-		("ex", boost::program_options::value<std::vector<double> >(&in_ex)->multitoken()->default_value(std::vector<double>{0, 0}, "0, 0"), "x component of the electrical field")
+		("lambda", boost::program_options::value<double>(&in_lambda)->default_value(5), "incident field vacuum wavelength")
+		("direction", boost::program_options::value<std::vector<double> >(&in_dir)->multitoken()->default_value(std::vector<double>{1, 0, 1}, "0, 0, 1"), "incoming field direction")
+		("ex", boost::program_options::value<std::vector<double> >(&in_ex)->multitoken()->default_value(std::vector<double>{1, 0}, "0, 0"), "x component of the electrical field")
 		("ey", boost::program_options::value<std::vector<double> >(&in_ey)->multitoken()->default_value(std::vector<double>{1, 0}, "1, 0"), "y component of the electrical field")
 		("ez", boost::program_options::value<std::vector<double> >(&in_ez)->multitoken()->default_value(std::vector<double>{0, 0}, "0 0"), "z component of the electrical field")
 		("n", boost::program_options::value<std::vector<double>>(&in_n)->multitoken()->default_value(std::vector<double>{1, 1.4, 1.4, 1.0}, "1, 1.4, 1.4, 1.0"), "real refractive index (optical path length) of all L layers")
@@ -297,7 +298,8 @@ int main(int argc, char** argv) {
 		("alpha", boost::program_options::value<double>(&in_alpha)->default_value(1), "angle used to focus the incident field")
 		("beta", boost::program_options::value<double>(&in_beta)->default_value(0.0), "internal obscuration angle (for simulating reflective optics)")
 		("na", boost::program_options::value<double>(&in_na), "focus angle expressed as a numerical aperture (overrides --alpha)")
-		("samples", boost::program_options::value<std::vector<unsigned int> >(&in_samples)->multitoken()->default_value(std::vector<unsigned int>{64, 64}, "64 64"), "number of samples (can be specified in 2 dimensions)")
+		("samples", boost::program_options::value<std::vector<unsigned int> >(&in_samples)->multitoken()->default_value(std::vector<unsigned int>{1, 1}, "64 64"), "number of samples (can be specified in 2 dimensions)")
+		("wavemask", boost::program_options::value<std::vector<bool> >(&in_wavemask)->multitoken()->default_value(std::vector<bool>{1, 1, 1}, "1 1 1"), "waves simulated (boolean value for incident, reflected, and transmitted)")
 		("mode", boost::program_options::value<std::string>(&in_mode)->default_value("polar"), "sampling mode (polar, montecarlo)")
 		("log", "produce a log file")
 		;
@@ -313,10 +315,10 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 
-											
-	if(vm.count("log")){									// if a log is requested, begin output
+
+	if (vm.count("log")) {									// if a log is requested, begin output
 		std::stringstream ss;
-		ss<<std::time(0)<<"_scatterlayer.log";
+		ss << std::time(0) << "_scatterlayer.log";
 		logfile.open(ss.str());
 	}
 
@@ -331,7 +333,7 @@ int main(int argc, char** argv) {
 		L = in_kappa.size() + 1;														// add additional layers
 	if (in_z.size() + 1 > L)															// if more z coordinates are provided
 		L = in_z.size() + 1;															// add additional layers
-	
+
 
 	// update parameter lists so that all represent the same number of layers
 	in_n.resize(L, in_n.back());														// add additional layers (append copies of the previous refractive index)
@@ -341,7 +343,7 @@ int main(int argc, char** argv) {
 			in_z.push_back(in_z.back() + 10.0);											// add additional layers in increments of 10 units
 		}
 	}
-	
+
 	glm::tvec3<double> dir = glm::normalize(glm::tvec3<double>(in_dir[0], in_dir[1], in_dir[2]));				// set the direction of the incoming source field
 	glm::tvec3<std::complex<double>> e = glm::tvec3<std::complex<double>>(std::complex<double>(in_ex[0], in_ex[1]),
 		std::complex<double>(in_ey[0], in_ey[1]),
@@ -351,7 +353,7 @@ int main(int argc, char** argv) {
 	k_vac = 2 * M_PI / in_lambda;
 	k = k_vac;										// calculate the wavenumber (2 pi * n / lambda) in the incident plane (accounting for refractive index)
 	tira::planewave<double> i_ref(dir[0] * k, dir[1] * k, dir[2] * k, e[0], e[1], e[2]);
-	
+
 	unsigned int N[2];											// calculate the number of samples
 	if (in_samples.size() == 1) {
 		if (in_mode == "montecarlo") {
@@ -382,7 +384,7 @@ int main(int argc, char** argv) {
 		I = tira::planewave<double>::SolidAngleMC(in_alpha, k * dir[0], k * dir[1], k * dir[2], e[0], e[1], e[2], N[0] * N[1], in_beta, glm::vec<3, double>(0, 0, -1));
 	else if (in_mode == "polar")
 		I = tira::planewave<double>::SolidAnglePolar(in_alpha, k * dir[0], k * dir[1], k * dir[2], e[0], e[1], e[2], N[0], N[1], in_beta, glm::vec<3, double>(0, 0, -1));
-														
+
 
 	CoupledWaveStructure<double> cw;																// allocate a coupled wave structure to store simulation results
 	cw.Layers.resize(L - 1);
@@ -399,21 +401,24 @@ int main(int argc, char** argv) {
 		Eigen::VectorXcd x = A.colPivHouseholderQr().solve(b);												// solve the linear system
 		std::vector<tira::planewave<double>> P = mat2waves(i, x);									// generate plane waves from the solution vector
 		//std::cout << x << std::endl;
-		cw.Pi.push_back(i);
+		if (in_wavemask[0])
+			cw.Pi.push_back(i);
 
 		for (size_t l = 0; l < L - 1; l++) {														// for each layer
 			cw.Layers[l].z = z[l];
 			tira::planewave<double> r = P[1 + l * 2 + 0].wind(0.0, 0.0, -z[l]);
-			cw.Layers[l].Pr.push_back(r);
+			if (in_wavemask[1])
+				cw.Layers[l].Pr.push_back(r);
 			tira::planewave<double> t = P[1 + l * 2 + 1].wind(0.0, 0.0, -z[l]);
-			cw.Layers[l].Pt.push_back(t);
+			if (in_wavemask[2])
+				cw.Layers[l].Pt.push_back(t);
 
-			if(logfile){
-				logfile<<"LAYER "<<l<<"=========================="<<std::endl;
-				logfile<<"i ("<<p<<") ------------"<<std::endl<<i.str()<<std::endl;
-				logfile<<"r ("<<p<<") ------------"<<std::endl<<r.str()<<std::endl;
-				logfile<<"t ("<<p<<") ------------"<<std::endl<<t.str()<<std::endl;
-				logfile<<std::endl;
+			if (logfile) {
+				logfile << "LAYER " << l << "==========================" << std::endl;
+				logfile << "i (" << p << ") ------------" << std::endl << i.str() << std::endl;
+				logfile << "r (" << p << ") ------------" << std::endl << r.str() << std::endl;
+				logfile << "t (" << p << ") ------------" << std::endl << t.str() << std::endl;
+				logfile << std::endl;
 			}
 
 		}
@@ -428,7 +433,7 @@ int main(int argc, char** argv) {
 		for (int i = 0; i < ri.size() - 2; i++) {
 			ref[i] = ri[i + 1];
 		}
-		const std::vector<long unsigned> shape{ (unsigned long)(ri.size()-2), 1, 1 };
+		const std::vector<long unsigned> shape{ (unsigned long)(ri.size() - 2), 1, 1 };
 		const bool fortran_order{ false };
 		npy::SaveArrayAsNumpy(in_sample, fortran_order, shape.size(), shape.data(), ref);
 	}
@@ -502,7 +507,7 @@ int main(int argc, char** argv) {
 	std::vector< tira::planewave<double> > T;
 	T.push_back(i_ref);								// push the incident plane wave to the back
 	for (size_t l = 0; l < L - 1; l++) {
-		
+
 		tira::planewave<double> r = P[1 + l * 2 + 0].wind(0.0, 0.0, -z[l]);
 		R.push_back(r);
 		tira::planewave<double> t = P[1 + l * 2 + 1].wind(0.0, 0.0, -z[l]);
@@ -514,13 +519,13 @@ int main(int argc, char** argv) {
 		std::cout << std::setw(namewidth) << std::left << "^^^^^^^^ E(0):" << vec2str(r_E, numwidth) << std::endl;
 
 		std::cout << std::endl;
-		std::cout << "n = " << ri[l].real() <<" + "<<ri[l].imag()<<"i========================="<< std::endl;
+		std::cout << "n = " << ri[l].real() << " + " << ri[l].imag() << "i=========================" << std::endl;
 		//std::cout << "                            z = " << z[l] << std::endl;
 		glm::vec<3, std::complex<double>> Er = R[l].getE(0, 0, z[l]);
 		glm::vec<3, std::complex<double>> Et = T[l].getE(0, 0, z[l]);
 		glm::vec<3, std::complex<double>> sum = Er + Et;
-		std::cout << "-------E("<<z[l] << std::setw(numwidth) << std::left <<"):"  << vec2str(sum, numwidth) << std::endl;
-		std::cout << "n = " << ri[l + 1].real() << " + "<<ri[l+1].imag()<<"i========================="<< std::endl;
+		std::cout << "-------E(" << z[l] << std::setw(numwidth) << std::left << "):" << vec2str(sum, numwidth) << std::endl;
+		std::cout << "n = " << ri[l + 1].real() << " + " << ri[l + 1].imag() << "i=========================" << std::endl;
 		std::cout << std::endl;
 
 		glm::vec<3, std::complex<double>> t_k = t.getK();
@@ -530,7 +535,7 @@ int main(int argc, char** argv) {
 		std::cout << std::setw(namewidth) << std::left << "vvvvvvvv E(0):" << vec2str(t_E, numwidth) << std::endl;
 		std::cout << std::endl << std::endl;
 
-		
+
 	}
 
 }
