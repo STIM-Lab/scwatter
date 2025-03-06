@@ -28,6 +28,8 @@ find_package(GLEW REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(FFTW3 CONFIG REQUIRED)
 find_package(MKL CONFIG REQUIRED)
+find_package(PNG)
+find_package(JPEG)
 
 #build the executable in the binary directory on MS Visual Studio
 if ( MSVC )
@@ -114,4 +116,6 @@ target_link_libraries(scwatterview
 			Eigen3::Eigen
 			FFTW3::fftw3
 			MKL::MKL
+			PNG::PNG
+			JPEG::JPEG
 )

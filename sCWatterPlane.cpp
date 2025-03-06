@@ -227,8 +227,12 @@ int main(int argc, char** argv) {
 	cw.Layers.resize(1);
 	cw.Layers[0].z = p[2];
 
+	if (vm.count("incident")) {								// if the incident field is specified, 
+		// RUIJIAO: convert the incident field into a vector of plane waves stored in I
+		// You'll need
+	}
 	// if there is only one plane wave, save the previous simulation
-	if (in_alpha == 0 || N[0] * N[1] == 1) {													
+	else if (in_alpha == 0 || N[0] * N[1] == 1) {													
 		cw.Pi.push_back(i);
 		cw.Layers[0].Pr.push_back(r);
 		cw.Layers[0].Pt.push_back(t);
