@@ -18,6 +18,9 @@
 //		[N-bit float]			k.y (imaginary)
 //		[N-bit float]			k.z (real)
 //		[N-bit float]			k.z (imaginary)
+
+//		[64-bit unsigned int]	number of homogeneous layers
+
 // FOR EACH LAYER
 //		[N-bit float]			z coordinate
 //		[64-bit unsigned int]	number of reflected plane waves
@@ -68,8 +71,8 @@ public:
 
 		size_t sizeof_Pi = Pi.size();
 		file.write((char*)&sizeof_Pi, sizeof(size_t));		// output the number of incident plane waves
-		for (size_t iPi = 0; iPi < Pi.size(); iPi++) {
-			file.write((char*)&Pi[iPi], sizeof(tira::planewave<T>));
+		for (size_t iPi = 0; iPi < Pi.size(); iPi++) {						// for each plane wave
+			file.write((char*)&Pi[iPi], sizeof(tira::planewave<T>));		// output the plane wave
 		}
 		size_t sizeof_Layers = Layers.size();
 		size_t sizeof_Pr, sizeof_Pt;						// Pr/Pt has a dim of M. While the inside field has a dim of M*2M

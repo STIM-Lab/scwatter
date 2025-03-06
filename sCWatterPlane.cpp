@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
 		("alpha,a", boost::program_options::value<double>(&in_alpha)->default_value(0.5), "angle used to focus the incident field")
 		("beta,b", boost::program_options::value<double>(&in_beta)->default_value(0.0), "internal obscuration angle (for simulating reflective optics)")
 		("incident", boost::program_options::value<std::string>(&in_incident), "specify the incident field as a NumPy (*.np) file using --alpha to set the range of spatial frequencies")
-		("samples,s", boost::program_options::value<std::vector<unsigned int> >(&in_samples)->multitoken()->default_value(std::vector<unsigned int>{64, 64}, "375"), "number of samples (can be specified in 2 dimensions)")
+		("samples,s", boost::program_options::value<std::vector<unsigned int> >(&in_samples)->multitoken()->default_value(std::vector<unsigned int>{64, 64}, "64 64"), "number of samples (can be specified in 2 dimensions)")
 		("mode,m", boost::program_options::value<std::string>(&in_mode)->default_value("polar"), "sampling mode (polar, montecarlo)")
 		("wavemask", boost::program_options::value<std::vector<bool> >(&in_wavemask)->multitoken()->default_value(std::vector<bool>{1, 1, 1}, "1 1 1"), "waves simulated (boolean value for incident, reflected, and transmitted)")
 		("log", "produce a log file")
