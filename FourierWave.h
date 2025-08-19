@@ -393,6 +393,6 @@ private:
 			}
 		}
 		return phi;
-		phi.resize(0, 0);
+		//phi.resize(0, 0);
 	}
 };

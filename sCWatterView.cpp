@@ -396,7 +396,8 @@ void RenderGui() {
     {
         unsigned int N = pow(2, in_resolution);
         if (ImGui::Button("Save Slice")) {                                              // create a button that opens a file dialog
-            ImGuiFileDialog::Instance()->OpenDialog("ChooseNpyFile", "Choose NPY File", ".npy,.npz", ".");
+            //ImGuiFileDialog::Instance()->OpenDialog("ChooseNpyFile", "Choose NPY File", ".npy,.npz", ".");
+            ImGuiFileDialog::Instance()->OpenDialog("ChooseNpyFile", "Choose NPY File", ".npy,.npz");
         }
         if (ImGuiFileDialog::Instance()->Display("ChooseNpyFile")) {				    // if the user opened a file dialog
             if (ImGuiFileDialog::Instance()->IsOk()) {								    // and clicks okay, they've probably selected a file

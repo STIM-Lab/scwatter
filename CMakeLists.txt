@@ -1,5 +1,5 @@
 #Specify the version being used aswell as the language
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.30)
 
 #Name your project here
 project(sCWatter LANGUAGES CUDA CXX)
@@ -10,13 +10,15 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 
 # fix warnings with BOOST and CMake
-set(Boost_NO_WARN_NEW_VERSIONS 1)
+#set(Boost_NO_WARN_NEW_VERSIONS 1)
+
+
 find_package(Boost REQUIRED COMPONENTS program_options)
 
 
 #find the TIRA library
 set(CMAKE_CUDA_ARCHITECTURES 75)
-find_package(CUDA REQUIRED)
+#find_package(CUDA REQUIRED)
 
 
 find_package(glm CONFIG REQUIRED)
@@ -52,6 +54,13 @@ include_directories(
 			${MKL_H}
 )
 link_directories(${CUDA_BIN_DIRS})
+
+# suppress warnings regarding ImGuiFileDialog, which we didn't write
+set_source_files_properties(
+		ImGuiFileDialog/ImGuiFileDialog.cpp
+		PROPERTIES
+		COMPILE_FLAGS "-Wno-deprecated-enum-enum-conversion"
+)
 				
 #create an executable
 add_executable(scwatterplane
